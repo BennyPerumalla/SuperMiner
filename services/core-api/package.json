@@ -1,0 +1,46 @@
+{
+  "name": "koyla-chain-core-api",
+  "version": "1.0.0",
+  "description": "Core API for the Koyla-Chain Compliance Ecosystem — Auth, RBAC, CRUD, WatermelonDB Sync, PostGIS Spatial Queries",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
+    "migrate:make": "knex migrate:make",
+    "seed": "knex seed:run",
+    "test": "jest --runInBand --forceExit --detectOpenHandles",
+    "test:unit": "jest --testPathPattern=unit --forceExit",
+    "test:integration": "jest --testPathPattern=integration --runInBand --forceExit --detectOpenHandles",
+    "lint": "echo 'No linter configured yet'"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "pg": "^8.13.0",
+    "pino": "^9.4.0",
+    "pino-http": "^10.3.0",
+    "pino-pretty": "^11.2.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 30000,
+    "setupFilesAfterSetup": ["./tests/setup.js"]
+  }
+}
