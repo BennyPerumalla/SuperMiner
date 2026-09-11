@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Mines() {
+function Mines({ setActivePage }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
@@ -228,7 +228,10 @@ function Mines() {
 
               {filteredMines.map((mine) => (
 
-                <tr key={mine.id}>
+                <tr key={mine.id} 
+                onClick={() => setActivePage("Risk Intelligence")}
+                style={{ cursor: "pointer" }}
+                >
 
                   <td>
                     <div className="mine-name">

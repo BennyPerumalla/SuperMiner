@@ -76,13 +76,28 @@ function Inspections({ setActivePage }) {
         </div>
 
         <div className="risk-header-actions">
-          <button className="secondary-btn">
-            Inspection Calendar
+          <button
+              className="secondary-btn"
+            onClick={() => {
+          document
+          .querySelector(".inspection-table-panel")
+            ?.scrollIntoView({ behavior: "smooth" });
+           }}
+            >
+           Inspection Calendar
           </button>
 
-          <button className="primary-btn">
-            + New Inspection
-          </button>
+          <button
+             className="primary-btn"
+            onClick={() => {
+             document
+             .querySelector(".inspection-table-panel")
+             ?.scrollIntoView({ behavior: "smooth" });
+             }}
+             >
+              + New Inspection
+         </button>
+          
         </div>
       </div>
 

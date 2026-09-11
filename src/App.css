@@ -3236,3 +3236,345 @@ th {
   color: #68756e;
   opacity: 1;
 }
+
+/* Dashboard AI Insight */
+.dashboard-ai-insight {
+  margin: 18px 0;
+  padding: 13px 15px;
+  border: 1px solid #dfe9e3;
+  border-radius: 10px;
+  background: #f6faf7;
+}
+
+.dashboard-ai-insight span {
+  display: block;
+  margin-bottom: 6px;
+  color: #4e7765;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+
+.dashboard-ai-insight p {
+  margin: 0;
+  color: #65736b;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* Dashboard - Recent Alerts Redesign */
+
+.dashboard-grid .panel {
+  background: #ffffff;
+}
+
+.dashboard-grid .panel-header {
+  margin-bottom: 8px;
+}
+
+.dashboard-grid .panel-header h2 {
+  color: #18251f;
+}
+
+.dashboard-grid .alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  padding: 16px 4px;
+  border-radius: 0;
+  border-bottom: 1px solid #edf0ee;
+  background: #ffffff;
+  color: #26352e;
+  transition: background 0.2s ease;
+}
+
+.dashboard-grid .alert:last-child {
+  border-bottom: none;
+}
+
+.dashboard-grid .alert:hover {
+  background: #f8faf9;
+}
+
+.dashboard-grid .alert-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+}
+
+.dashboard-grid .alert.critical .alert-dot {
+  background: #c94b4b;
+  box-shadow: 0 0 0 4px rgba(201, 75, 75, 0.1);
+}
+
+.dashboard-grid .alert.high .alert-dot {
+  background: #d4773e;
+  box-shadow: 0 0 0 4px rgba(212, 119, 62, 0.1);
+}
+
+.dashboard-grid .alert.medium .alert-dot {
+  background: #c58a2c;
+  box-shadow: 0 0 0 4px rgba(197, 138, 44, 0.1);
+}
+
+.dashboard-grid .alert-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dashboard-grid .alert-content strong {
+  color: #26352e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dashboard-grid .alert-content span {
+  color: #8a958f;
+  font-size: 10px;
+}
+
+.dashboard-grid .alert button {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: #527565;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-grid .alert button:hover {
+  color: #183a2c;
+}
+
+@media (max-width: 700px) {
+  .dashboard-grid .alert {
+    padding: 14px 2px;
+  }
+
+  .dashboard-grid .alert-content strong {
+    font-size: 12px;
+  }
+}
+
+/* Dashboard - Stat Number Visibility */
+
+.stat-card h2 {
+  color: #18251f !important;
+  font-size: 34px;
+  font-weight: 700;
+  opacity: 1 !important;
+  margin: 8px 0 10px;
+}
+
+.stat-card p {
+  color: #5f6d66;
+  opacity: 1;
+}
+
+.stat-card.danger h2 {
+  color: #c94b4b !important;
+}
+
+.stat-card.warning h2 {
+  color: #c58a2c !important;
+}
+
+/* Dashboard - Header Visibility */
+
+.main > .topbar + .risk-page-header h1,
+.risk-page-header h1 {
+  color: #18251f !important;
+  opacity: 1 !important;
+  font-weight: 700;
+}
+
+.risk-page-header p {
+  color: #65736b !important;
+  opacity: 1 !important;
+}
+
+/* Dashboard - Attention Required Panel */
+
+.dashboard-grid > .panel:nth-child(2) {
+  padding-bottom: 10px;
+}
+
+.dashboard-alert-btn {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 15px 18px;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid #edf0ee;
+  border-radius: 0;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-alert-btn:last-child {
+  border-bottom: none;
+}
+
+.dashboard-alert-btn:hover {
+  background: #f7faf8;
+}
+
+.dashboard-alert-btn .alert-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+}
+
+.dashboard-alert-btn .alert-dot.critical {
+  background: #c94b4b;
+  box-shadow: 0 0 0 4px rgba(201, 75, 75, 0.10);
+}
+
+.dashboard-alert-btn .alert-dot.high {
+  background: #d4773e;
+  box-shadow: 0 0 0 4px rgba(212, 119, 62, 0.10);
+}
+
+.dashboard-alert-btn .alert-dot.medium {
+  background: #c58a2c;
+  box-shadow: 0 0 0 4px rgba(197, 138, 44, 0.10);
+}
+
+.dashboard-alert-btn > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dashboard-alert-btn strong {
+  color: #26352e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-alert-btn p {
+  margin: 0;
+  color: #8a958f;
+  font-size: 10px;
+}
+
+.dashboard-alert-btn::after {
+  content: "→";
+  margin-left: auto;
+  color: #9aa59f;
+  font-size: 13px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-alert-btn:hover::after {
+  color: #527565;
+  transform: translateX(3px);
+}
+/* Dashboard - Mine Compliance Table */
+
+.mine-panel table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.mine-panel th {
+  padding: 13px 16px;
+  background: #f7faf8;
+  color: #7a8781;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  text-align: left;
+  border-bottom: 1px solid #e4ebe7;
+}
+
+.mine-panel td {
+  padding: 17px 16px;
+  color: #5f6d66;
+  font-size: 12px;
+  border-bottom: 1px solid #edf0ee;
+}
+
+.mine-panel tbody tr {
+  transition: background 0.2s ease;
+}
+
+.mine-panel tbody tr:hover {
+  background: #f8fbf9;
+}
+
+.mine-panel tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mine-panel td strong {
+  color: #25352d;
+  font-size: 13px;
+}
+
+.mine-panel .risk-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  font-weight: 800;
+}
+
+.mine-panel .high-text {
+  color: #c94b4b !important;
+}
+
+.mine-panel .medium-text {
+  color: #c58a2c !important;
+}
+
+.mine-panel .low-text {
+  color: #4e8068 !important;
+}
+
+.mine-panel .status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mine-panel .high-status {
+  background: #fce9e9;
+  color: #b33d3d;
+}
+
+.mine-panel .medium-status {
+  background: #fff3dc;
+  color: #a87320;
+}
+
+.mine-panel .low-status {
+  background: #e8f3ed;
+  color: #3f7258;
+}
+
+@media (max-width: 650px) {
+  .mine-panel {
+    overflow-x: auto;
+  }
+
+  .mine-panel table {
+    min-width: 600px;
+  }
+}

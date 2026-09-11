@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import RiskIntelligence from "./pages/RiskIntelligence";
 import Mines from "./pages/Mines";
@@ -10,14 +10,24 @@ import Alerts from "./pages/Alerts";
 
 function App() {
   const [activePage, setActivePage] = useState("Dashboard");
+   useEffect(() => {
+         const handleNavigation = (event) => {
+           setActivePage(event.detail);
+        };
 
+        window.addEventListener("navigate-page", handleNavigation);
+
+         return () => {
+         window.removeEventListener("navigate-page", handleNavigation);
+      };
+     }, []);
   const renderPage = () => {
     if (activePage === "Risk Intelligence") {
         return <RiskIntelligence setActivePage={setActivePage} />;
      }
 
     if (activePage === "Mines") {
-      return <Mines />;
+       return <Mines setActivePage={setActivePage} />;
     }
 
     if (activePage === "Compliance") {
@@ -122,6 +132,15 @@ function App() {
               <li>5 unresolved violations</li>
               <li>Contractor compliance declining</li>
             </ul>
+ 
+            <div className="dashboard-ai-insight">
+           <span>✦ AI RECOMMENDATION</span>
+          <p>
+           Prioritize Mine A for inspection within 48 hours.
+           The current risk pattern suggests a high probability of
+            further compliance deterioration.
+           </p>
+           </div>
 
             <button
                     className="primary-btn"
@@ -145,59 +164,66 @@ function App() {
                 <h2>Attention Required</h2>
               </div>
 
-              <span className="view-all">
-                View all
-              </span>
+                  <button
+                className="view-all"
+                onClick={() => setActivePage("Alerts")}
+                >
+                 View all →
+                 </button>
 
             </div>
+        <button
+                className="alert dashboard-alert-btn"
+                onClick={() => setActivePage("Compliance")}
+                >
+                  <span className="alert-dot critical"></span>
 
-            <div className="alert">
+                  <div>
+                  <strong>
+                   Critical Safety Violation
+                   </strong>
 
-              <span className="alert-dot critical"></span>
-
-              <div>
-                <strong>
-                  Critical Safety Violation
-                </strong>
-
-                <p>
+                  <p>
                   Mine A • 15 min ago
-                </p>
-              </div>
-
-            </div>
-
-            <div className="alert">
-
-              <span className="alert-dot high"></span>
-
-              <div>
-                <strong>
-                  Inspection Overdue
-                </strong>
-
-                <p>
-                  Mine C • 1 hour ago
-                </p>
-              </div>
-
-            </div>
-
-            <div className="alert">
-
-              <span className="alert-dot medium"></span>
+                   </p>
+                </div>
+        </button>
+            
+         <button
+             className="alert dashboard-alert-btn"
+          onClick={() => setActivePage("Inspections")}
+>
+           <span className="alert-dot high"></span>
 
               <div>
-                <strong>
-                  Compliance Action Pending
-                </strong>
+               <strong>
+                Inspection Overdue
+              </strong>
 
-                <p>
-                  Mine B • 3 hours ago
-                </p>
-              </div>
+               <p>
+              Mine C • 1 hour ago
+            </p>
+         </div>
+          </button>
 
-            </div>
+           <button
+             className="alert dashboard-alert-btn"
+           onClick={() => setActivePage("Compliance")}
+             >
+        <span className="alert-dot medium"></span>
+
+             <div>
+             <strong>
+              Compliance Action Pending
+             </strong>
+
+           <p>
+            Mine B • 3 hours ago
+         </p>
+        </div>
+          </button> 
+
+            
 
           </div>
 
@@ -244,10 +270,13 @@ function App() {
 
             <tbody>
 
-              <tr>
-
-                <td>
-                  <strong>Mine A</strong>
+              <tr
+                onClick={() => setActivePage("Risk Intelligence")}
+              style={{ cursor: "pointer" }}
+            >
+              
+             <td>
+              <strong>Mine A</strong>
                 </td>
 
                 <td>
@@ -268,10 +297,13 @@ function App() {
 
               </tr>
 
-              <tr>
-
-                <td>
-                  <strong>Mine B</strong>
+             <tr
+                 onClick={() => setActivePage("Risk Intelligence")}
+                style={{ cursor: "pointer" }}
+                >
+                   
+                   <td>
+                <strong>Mine B</strong>
                 </td>
 
                 <td>
@@ -292,11 +324,15 @@ function App() {
 
               </tr>
 
-              <tr>
-
-                <td>
-                  <strong>Mine C</strong>
-                </td>
+             <tr
+                 onClick={() => setActivePage("Risk Intelligence")}
+                style={{ cursor: "pointer" }}
+                >
+                 
+                  <td>
+              <strong>Mine C</strong>
+              </td>
+                
 
                 <td>
                   67%

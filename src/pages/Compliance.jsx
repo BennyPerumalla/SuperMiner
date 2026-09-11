@@ -446,9 +446,12 @@ function Compliance() {
                   {violation.severity}
                 </span>
 
-                <button className="view-evidence-btn">
-                  View →
-                </button>
+                <button
+                   className="view-evidence-btn"
+                   onClick={() => window.dispatchEvent(new CustomEvent("navigate-page", { detail: "Inspections" }))}
+                   >
+                   View →
+                  </button>
 
               </div>
 
