@@ -1,57 +1,84 @@
-# SIH26024 — Koyla-Chain Compliance Ecosystem
+# SuperMiner — Koyla-Chain Mining Compliance Backend
 
-Production-quality backend for coal mine safety compliance, built for the Smart India Hackathon.
+A backend for coal mine safety compliance, built for the Smart India Hackathon. Provides authentication, role-based access control, CRUD operations, WatermelonDB offline synchronization, and PostGIS spatial queries.
 
 ## Architecture
 
-| Service | Technology | Port | Purpose |
-|---------|-----------|------|---------|
-| **Core API** | Node.js / Express | 3000 | Auth, RBAC, CRUD, WatermelonDB Sync, PostGIS |
-| **AI Service** | Python / FastAPI | 8000 | YOLO/PaddleOCR hazard detection (stub) |
-| **PostgreSQL** | PostGIS 16 | 5432 | Source of truth for application state |
-| **Redis** | Redis 7 | 6379 | Token blacklist, rate limiting, sessions |
-
-## Quick Start
-
-### Prerequisites
-- Docker + Docker Compose
-- Node.js 20+ (for local development)
-- Python 3.11+ (for AI service development)
-
-### Run with Docker (recommended)
-
-```bash
-docker compose up --build
+```
+Mobile App (WatermelonDB)
+    │
+    ├── POST /api/sync  (push offline changes)
+    ├── GET  /api/sync   (pull server changes)
+    │
+    ▼
+Express.js Backend (:3000)
+    │
+    ├── /api/auth         → Authentication (JWT)
+    ├── /api/mines        → Mines CRUD
+    ├── /api/incidents    → Incidents CRUD
+    ├── /api/inspections  → Inspections CRUD
+    ├── /api/sync         → WatermelonDB Sync
+    ├── /api/spatial      → PostGIS Queries
+    │
+    ▼
+PostgreSQL + PostGIS
 ```
 
-This starts all services. Access:
-- **Swagger UI**: http://localhost:3000/api-docs
-- **FastAPI Docs**: http://localhost:8000/docs
-- **Health Check**: http://localhost:3000/health
+**Pattern**: `route → middleware (auth + validate) → controller → db.query() → response`
 
-### Run Locally (without Docker)
+## Technologies
 
-1. **Start PostgreSQL + Redis** (via Docker or local install):
-   ```bash
-   docker compose up postgres redis
-   ```
+- **Node.js** + **Express.js** — API server
+- **PostgreSQL** + **PostGIS** — database with spatial support
+- **bcrypt** — password hashing
+- **jsonwebtoken** — JWT authentication
+- **pg** — PostgreSQL client
+- **express-validator** — request validation
+- **uuid** — UUID generation for sync
 
-2. **Core API**:
-   ```bash
-   cd services/core-api
-   cp .env.example .env    # Edit if needed
-   npm install
-   npm run migrate          # Run database migrations
-   npm run seed             # Load development data
-   npm run dev              # Start with hot-reload (port 3000)
-   ```
+## Setup
 
-3. **AI Service**:
-   ```bash
-   cd services/ai-service
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload --port 8000
-   ```
+### Prerequisites
+
+- Node.js 20+
+- PostgreSQL 14+ with PostGIS extension
+
+### Database Setup
+
+```bash
+# Create the database
+psql -U postgres -c "CREATE DATABASE superminer;"
+
+# Enable PostGIS (schema.sql does this, but just in case)
+psql -U postgres -d superminer -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+```
+
+### Install & Run
+
+```bash
+cd backend
+
+# Install dependencies
+npm install
+
+# Create .env file
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Start the server (auto-creates tables)
+npm run dev
+
+# Load seed data (test users, mines, etc.)
+npm run seed
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/superminer` | PostgreSQL connection string |
+| `JWT_SECRET` | `secret` | Secret for JWT signing (change in production!) |
+| `PORT` | `3000` | Server port |
 
 ## Test Users (from seed data)
 
@@ -65,77 +92,120 @@ This starts all services. Access:
 ## API Endpoints
 
 ### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/login` | Login, get JWT tokens |
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/refresh` | Refresh access token |
-| POST | `/api/auth/logout` | Revoke tokens |
-| GET | `/api/auth/me` | Get current user |
 
-### CRUD
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET/POST | `/api/mines` | List/create mines |
-| GET/PUT | `/api/mines/:id` | Get/update mine |
-| GET/POST | `/api/incidents` | List/create incidents |
-| GET/PUT | `/api/incidents/:id` | Get/update incident |
-| GET/POST | `/api/inspections` | List/create inspections |
-| GET/PUT | `/api/inspections/:id` | Get/update inspection |
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/auth/register` | Register new user | Public |
+| POST | `/api/auth/login` | Login, get JWT | Public |
+| GET | `/api/auth/me` | Get current user | JWT |
+
+### Mines
+
+| Method | Endpoint | Description | Roles |
+|--------|----------|-------------|-------|
+| GET | `/api/mines` | List mines (scoped) | All authenticated |
+| GET | `/api/mines/:id` | Get mine details | All authenticated |
+| POST | `/api/mines` | Create mine | Manager, DGMS |
+| PUT | `/api/mines/:id` | Update mine | Manager (own mine) |
+
+### Incidents
+
+| Method | Endpoint | Description | Roles |
+|--------|----------|-------------|-------|
+| GET | `/api/incidents` | List incidents (scoped) | All authenticated |
+| GET | `/api/incidents/:id` | Get incident | All authenticated |
+| POST | `/api/incidents` | Report incident | Miner, Overman |
+| PUT | `/api/incidents/:id` | Update incident | Manager (own mine) |
+
+### Inspections
+
+| Method | Endpoint | Description | Roles |
+|--------|----------|-------------|-------|
+| GET | `/api/inspections` | List inspections (scoped) | All authenticated |
+| GET | `/api/inspections/:id` | Get inspection | All authenticated |
+| POST | `/api/inspections` | Create inspection | Overman, Manager, DGMS |
+| PUT | `/api/inspections/:id` | Update inspection | Manager, DGMS |
 
 ### Sync (WatermelonDB)
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/sync?last_pulled_at=0` | Pull changes since timestamp |
 | POST | `/api/sync` | Push offline changes (idempotent) |
 
 ### Spatial (PostGIS)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/spatial/violations/near-shaft/:id` | 500m proximity query |
-| GET | `/api/spatial/incidents/nearby` | Radius search |
-| GET | `/api/spatial/mines/:id/contains` | Point-in-boundary |
-| GET | `/api/spatial/mines/:id/sensors` | Mine sensors |
 
-### AI (Internal)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/internal/ai/analyze-hazard` | Hazard detection |
+| GET | `/api/spatial/incidents/nearby?lat=X&lng=Y&radius=500` | Find incidents within radius |
+| GET | `/api/spatial/violations/near-shaft/:shaftId?radius=500` | Violations near shaft |
+| GET | `/api/spatial/mines/:id/boundary` | Mine boundary as GeoJSON |
+
+## Roles & Permissions
+
+| Role | Create | Read | Update | Scope |
+|------|--------|------|--------|-------|
+| ROLE_MINER | Incidents | Own mine | — | Own mine |
+| ROLE_OVERMAN | Incidents, Inspections | Own mine | — | Own mine |
+| ROLE_MINE_MANAGER | Mines, Incidents, Inspections | Own mine | Own mine | Own mine |
+| ROLE_DGMS_INSPECTOR | Inspections | All mines | Inspections | Global |
+
+**Scope enforcement**: A manager from Mine A cannot access Mine B's data. This is enforced at the query level using `mine_id` from the JWT.
+
+## Synchronization
+
+The mobile app uses WatermelonDB and may work offline. The sync protocol:
+
+1. **Pull** (`GET /api/sync?last_pulled_at=<timestamp>`):
+   - Returns records created, updated, or deleted since the timestamp
+   - Scoped to the user's mine
+
+2. **Push** (`POST /api/sync`):
+   - Sends offline changes (created, updated, deleted records)
+   - **Duplicate safety**: Uses `ON CONFLICT (watermelon_id) DO NOTHING` — retrying the same push never creates duplicates
+   - **Conflict resolution**: Server wins — if the server record was modified after `lastPulledAt`, the mobile change is skipped
+   - **Deletes**: Soft-delete via `deleted_at` column — mobile learns about deletions through pull
 
 ## Testing
 
 ```bash
-# Core API tests (requires PostgreSQL)
-cd services/core-api
-npm test
+# Create test database
+psql -U postgres -c "CREATE DATABASE superminer_test;"
+psql -U postgres -d superminer_test -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 
-# AI Service tests
-cd services/ai-service
-pytest
+# Run tests
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/superminer_test npm test
 ```
 
 ## Project Structure
 
 ```
-superminer/
-├── docker-compose.yml
-├── docker/postgres/init.sql
-├── services/
-│   ├── core-api/             # Node.js Express
-│   │   ├── src/
-│   │   │   ├── config/       # App, DB, Redis config
-│   │   │   ├── middleware/    # Auth, RBAC, validation, errors
-│   │   │   ├── modules/      # Feature-based: auth, mines, sync...
-│   │   │   ├── db/           # Migrations + seeds
-│   │   │   ├── utils/        # Logger, errors, response helpers
-│   │   │   └── docs/         # Swagger config
-│   │   └── tests/
-│   └── ai-service/           # Python FastAPI
-│       ├── app/
-│       │   ├── routers/      # API endpoints
-│       │   ├── schemas/      # Pydantic models
-│       │   ├── services/     # Business logic (ML stubs)
-│       │   └── middleware/   # Internal auth
-│       └── tests/
-└── docs/
+backend/
+├── app.js                          # Express app setup + route mounting
+├── server.js                       # Entry point
+├── package.json
+├── .env.example                    # Environment template
+├── db/
+│   ├── index.js                    # PostgreSQL pool + query helper
+│   ├── schema.sql                  # Full schema (PostGIS, sync columns, indexes)
+│   └── seed.sql                    # Dev seed data
+├── controllers/
+│   ├── auth.controller.js          # Register, Login, Me
+│   ├── mines.controller.js         # Mines CRUD
+│   ├── incidents.controller.js     # Incidents CRUD
+│   ├── inspections.controller.js   # Inspections CRUD
+│   ├── sync.controller.js          # WatermelonDB sync pull/push
+│   └── spatial.controller.js       # PostGIS spatial queries
+├── middleware/
+│   ├── auth.js                     # JWT authenticate + role authorize
+│   └── validate.js                 # express-validator wrapper
+├── routes/
+│   ├── auth.routes.js
+│   ├── mines.routes.js
+│   ├── incidents.routes.js
+│   ├── inspections.routes.js
+│   ├── sync.routes.js
+│   └── spatial.routes.js
+└── tests/
+    └── api.test.js                 # Integration tests
 ```
